@@ -1,0 +1,68 @@
+This is implementation of concept of variable length classless subnetting which covers all types of subnetting. The same code
+can work for classfull subnetting, classfull variable length subnetting and classless subnetting.
+
+How to run?
+Download subnet.java file open terminal in that directory in which you have placed or open the terminal and 
+change directory to the subnet.java file contaning folder and 
+run command
+
+javac subnet.java
+java subnet
+
+Algorithm :-
+1. Take IP any IP address of the network
+2. Take no of bits in network ID (IPAddress/noOfBitsInSubnetMask) the classless representation
+3. Take no of Subnets You Want to form
+4. Now find the IP address representation in bits
+5. Find subnet mask of network
+6. And this subnet mask with IP address taken as input to obtain NETWORK ID
+7. find binary representation of no's till no os subnet required and add them 
+    after network bit's 
+8. Now find the starting and last address of the range by resetting and setting
+    all the bits after this network id + appended bits
+9. Repeat above process for all the subnet Ranges 
+
+
+
+Here is sample run of the code
+
+run:
+Enter IP address  :  192.168.116.228
+Binary IP : 11000000 10101000 01110100 11100100 
+
+
+Enter Network Subnet Mask 24
+
+
+Network Subnet Mask   11111111.11111111.11111111.00000000
+
+Enter No of Subnets Required 3
+
+
+SubnetMask After Subnetting  11111111.11111111.11111111.11000000    255.255.255.192
+
+NetworkID  11000000.10101000.01110100.00000000.
+
+The Group 1 IP address ranges are 
+11000000.10101000.01110100.00000000.    192.168.116.0
+To
+11000000.10101000.01110100.00111111.    192.168.116.63
+
+The Group 2 IP address ranges are 
+11000000.10101000.01110100.01000000.    192.168.116.64
+To
+11000000.10101000.01110100.01111111.    192.168.116.127
+
+The Group 3 IP address ranges are 
+11000000.10101000.01110100.10000000.    192.168.116.128
+To
+11000000.10101000.01110100.11111111.    192.168.116.255
+
+
+Entire Network Address Range is 
+11000000.10101000.01110100.00000000.    192.168.116.0
+To
+11000000.10101000.01110100.11111111.    192.168.116.255
+
+
+
