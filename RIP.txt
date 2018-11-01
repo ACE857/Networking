@@ -1,0 +1,26 @@
+
+What is Routing Information Protocol (RIP)?
+
+The Routing Information Protocol (RIP) is one of a family of IP Routing protocols, and is an Interior Gateway Protocol (IGP) designed to distribute routing information within an Autonomous System (AS).
+
+RIP is a simple vector routing protocol with many existing implementations in the field. In a vector routing protocol, the routers exchange network reachability information with their nearest neighbors. In other words, the routers communicate to each other the sets of destinations ("address prefixes") that they can reach, and the next hop address to which data should be sent in order to reach those destinations. This contrasts with link-state IGPs; vectoring protocols exchange routes with one another, whereas link state routers exchange topology information, and calculate their own routes locally.
+
+A vector routing protocol floods reachability information throughout all routers participating in the protocol, so that every router has a routing table containing the complete set of destinations known to the participating routers.
+
+In brief the RIP protocol works as follows.
+
+    Each router initializes its routing table with a list of locally connected networks.
+    Periodically, each router advertises the entire contents of its routing table over all of its RIP-enabled interfaces.
+        Whenever a RIP router receives such an advertisement, it puts all of the appropriate routes into its routing table and begins using it to forward packets. This process ensures that every network connected to every router eventually becomes known to all routers.
+        If a router does not continue to receive advertisements for a remote route, it eventually times out that route and stops forwarding packets over it. In other words, RIP is a "soft state" protocol.
+    Every route has a property called a metric, which indicates the "distance" to the route's destination.
+        Every time a router receives a route advertisement, it increments the metric.
+        Routers prefer shorter routes to longer routes when deciding which of two versions of a route to program in the routing table.
+        The maximum metric permitted by RIP is 16, which means that a route is unreachable. This means that the protocol cannot scale to networks where there may be more than 15 hops to a given destination.
+
+RIP also includes some optimizations of this basic algorithm to improve stabilization of the routing database and to eliminate routing loops.
+
+    When a router detects a change to its routing table, it sends an immediate "triggered" update. This speeds up stabilization of the routing table and elimination of routing loops.
+    When a route is determined to be unreachable, RIP routers do not delete it straightaway. Instead they continue to advertise the route with a metric of 16 (unreachable). This ensures that neighbors are rapidly notified of unreachable routes, rather than having to wait for a soft state timeout.
+    When router A has learnt a route from router B, it advertises the route back to B with a metric of 16 (unreachable). This ensures that B is never under the impression that A has a different way of getting to the same destination. This technique is known as "split horizon with poison reverse."
+    A "Request" message allows a newly-started router to rapidly query all of its neighbors' routing tables.
