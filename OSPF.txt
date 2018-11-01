@@ -1,0 +1,57 @@
+Open Shortest Path First (OSPF) is a standard routing protocol that’s been used the world over for many years. Supported by practically every routing vendor, as well as the open source community, OSPF is one of the few protocols in the IT industry you can count on being available just about anywhere you might need it.
+
+Enterprise networks that outgrow a single site will often use OSPF to interconnect their campuses and wide area networks (WANs).
+
+If you’re considering a dynamic routing protocol because your network has outgrown static routes, OSPF might seem a little daunting. It’s not quite as easy to set up as EIGRP so the temptation might be to simply use EIGRP and avoid the intimidating terminology that comes along with a complete understanding of OSPF.
+
+My recommendation is not to let OSPF scare you. It’s true that OSPF in large implementations can be complex. However, an OSPF configuration supporting smaller networks can be comparatively simple.
+
+In this post, I’ll discuss some of OSPF’s major principles, and then follow up with a simple configuration that brings up OSPF between two Cisco routers and exchange routes.
+OSPF’s big idea
+
+OSPF is a routing protocol. Two routers speaking OSPF to each other exchange information about the routes they know about and the cost for them to get there.
+
+When many OSPF routers are part of the same network, information about all of the routes in a network are learned by all of the OSPF routers within that network—technically called an area. (We’ll talk more about area as we go on).
+
+Each OSPF router passes along information about the routes and costs they’ve heard about to all of their adjacent OSPF routers, called neighbors.
+
+OSPF routers rely on cost to compute the shortest path through the network between themselves and a remote router or network destination. The shortest path computation is done using Djikstra’s algorithm. This algorithm isn’t unique to OSPF. Rather, it’s a mathematical algorithm that happens to have an obvious application to networking.
+
+Consider a simple example of five routers connected as shown in the diagram below. Assuming all links have the same cost, what’s the fastest way for R3 to connect to R5? Through R4 — R4 is the lowest cost path. (R3’s path to R5 via R1, for example, adds another link and therefore additional cost.)
+
+OSPF interfaces
+
+Another important idea in OSPF is that interfaces used to exchange information with OSPF neighbors have different types. There are too many types to discuss here but you should be aware of two important ones.
+
+    An OSPF broadcast interface is connected to a shared network, like Ethernet.
+    An OSPF point-to-point interface is connected to a link where there can only be a single OSPF router on either end, such as a WAN link or a purpose-built Ethernet link.
+
+The reason for the various interface types is to make sure that all routers know about all routes from all other routers.
+
+On point-to-point links, there’s no mystery — the two routers know they’re the only OSPF routers on the link and so they exchange routes with each other.
+
+On broadcast links, there’s a potential for many different OSPF routers to be on the network segment. To minimize the number of neighbor relationships that form on broadcast links, OSPF elects a designated router (as well as a backup) whose job it is to neighbor with all other OSPF routers on the segment and share everyone’s routes with everyone else.
+OSPF areas
+
+Areas in OSPF are collections of routers grouped together. With the exception of area border routers, OSPF routers in one area don’t neighbor with routers in other areas. Among other reasons, areas were once used to scale large OSPF networks.
+
+Back when router CPUs were less powerful than they are today, a general rule of thumb was to keep an OSPF area to no more than 50 routers. That would keep the number of OSPF shortest path computations and database updates to a manageable amount as interfaces went up and down, routes were learned and withdrawn, and so on.
+
+In modern networks, it’s not unheard of to scale to a thousand routers or more in a single area — router CPUs have come a long way.
+
+Today, although scale is not much of a reason for implementing multiple areas, OSPF areas are still useful as administrative boundaries in a network. For example:
+
+    Route summarization & aggregation (replacing several small routes with one larger route that covers them) can only happen at OSPF area boundaries.
+    Not all routers need to know about every other route available in a network. Using OSPF areas, it’s possible to inject a default route representing all routes outside of the local area.
+
+If you’re thinking you should be able to summarize or filter routes between OSPF routers within an area, the problem is that for the shortest path first (SPF) calculation to work, all routers in an area need to have an identical “picture” of the network. Therefore, it’s impossible to hide routes between OSPF routers in an area.
+
+(A type of OSPF filtering you might be familiar with is actually a filter between the OSPF routing information base (RIB) and the router’s forwarding information base (FIB). The local OSPF process still passes information about the filtered route along to other OSPF neighbors.)
+
+The most important area in OSPF is the backbone area, also known as area 0. The backbone area is the area that all OSPF areas must traverse to get to other OSPF areas.
+
+For instance, let’s say we have area 0, area 1, and area 2. Area 1 traffic must traverse area 0 to get to area 2, and vice versa. Even if there was a router with one interface in area 1, and another interface in area 2, area 1 and 2 traffic could not traverse this router directly. The reason for this is loop prevention.
+
+While OSPF routers within an area know everything there is to know about the network topology, topology information is hidden at area borders. For more detail about why the backbone area and related traversal rule exists, network architect Jeff Doyle has an article that explains it well. 
+
+https://www.auvik.com/media/blog/ospf-protocol-explained/
