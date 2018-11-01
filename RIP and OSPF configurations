@@ -1,0 +1,13 @@
+RIP completely UI based
+OSPF connect topology by UI
+
+then to configure protocol do
+enable 
+configure terminal
+router ospf 10
+network 10.0.0.0 0.255.255.255 area 0
+exit 
+
+router ospf process ID
+network NID WILDCARD(opp of subnet mask) area areaNO
+exit
